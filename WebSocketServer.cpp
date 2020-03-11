@@ -1,4 +1,4 @@
-#include "Server.hpp"
+#include "WebSocketServer.hpp"
 
 WebSocketServer::WebSocketServer() :_helpRequested(false)
 {
