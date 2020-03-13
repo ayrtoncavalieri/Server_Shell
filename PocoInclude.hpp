@@ -1,5 +1,6 @@
 #include <Poco/Exception.h>
 #include <Poco/Format.h>
+#include <Poco/ThreadPool.h>
 #include <Poco/Timespan.h>
 #include <Poco/UnicodeConverter.h>
 #include <Poco/UTFString.h>

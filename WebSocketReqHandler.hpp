@@ -10,7 +10,7 @@
 class WebSocketRequestHandler: public HTTPRequestHandler
 {
     public: 
-        void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response);  
+        void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response);
 };
 
 #endif

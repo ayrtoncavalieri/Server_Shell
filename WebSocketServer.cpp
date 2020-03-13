@@ -72,13 +72,15 @@ int WebSocketServer::main(const std::vector<std::string>& args)
 
         // get parameters from configuration file
         unsigned short port = (unsigned short) config().getInt("WebSocketServer.port", 9980);
+        
+        ThreadPool pool(3, 100, 60, POCO_THREAD_STACK_SIZE);
 
         // set-up a server socket
         ServerSocket svs(port);
         //SecureServerSocket svs(port, 64, pContext);
         svs.supportsIPv6() == true ? printf("IPv6\n") : printf("IPv4\n");
         // set-up a HTTPServer instance
-        HTTPServer srv(new RequestHandlerFactory, svs, new HTTPServerParams);
+        HTTPServer srv(new RequestHandlerFactory, pool, svs, new HTTPServerParams);
         // start the HTTPServer
         srv.start();
         // wait for CTRL-C or kill

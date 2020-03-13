@@ -8,11 +8,12 @@
             "label": "g++ build active file",
             "command": "/usr/bin/g++",
             "args": [
+                "-O2",
                 "-g",
                 "${fileDirname}/*.cpp",
                 "${fileDirname}/*.hpp",
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}",
+                "${fileDirname}/main",
                 "-lPocoFoundation",
                 "-lPocoNet",
                 "-lPocoUtil",
