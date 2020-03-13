@@ -56,7 +56,7 @@ int WebSocketServer::main(const std::vector<std::string>& args)
     }
     else
     {
-        Poco::Net::initializeSSL();
+        /*Poco::Net::initializeSSL();
         Poco::SharedPtr<Poco::Net::InvalidCertificateHandler> pCert =
             new Poco::Net::ConsoleCertificateHandler(false);
         Poco::Net::Context::Ptr pContext = new Poco::Net::Context(
@@ -68,12 +68,12 @@ int WebSocketServer::main(const std::vector<std::string>& args)
                 9,
                 false,
                 "ALL:!ADH:!LOW:!EXP:!MD5:@STRENGTH");
-        Poco::Net::SSLManager::instance().initializeClient(0, pCert, pContext);
+        Poco::Net::SSLManager::instance().initializeClient(0, pCert, pContext);*/
 
         // get parameters from configuration file
         unsigned short port = (unsigned short) config().getInt("WebSocketServer.port", 9980);
         
-        ThreadPool pool(3, 100, 60, POCO_THREAD_STACK_SIZE);
+        ThreadPool pool(128, 256, 60, POCO_THREAD_STACK_SIZE);
 
         // set-up a server socket
         ServerSocket svs(port);
