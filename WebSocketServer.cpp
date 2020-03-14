@@ -71,7 +71,7 @@ int WebSocketServer::main(const std::vector<std::string>& args)
         Poco::Net::SSLManager::instance().initializeClient(0, pCert, pContext);*/
 
         // get parameters from configuration file
-        unsigned short port = (unsigned short) config().getInt("WebSocketServer.port", 9980);
+        unsigned short port = (unsigned short) config().getInt("WebSocketServer.port", 43880);
         
         ThreadPool pool(128, 256, 60, POCO_THREAD_STACK_SIZE);
 
