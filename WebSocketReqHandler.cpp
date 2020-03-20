@@ -39,7 +39,6 @@ Application& app = Application::instance();
         }while (n > 0 && (flags & WebSocket::FRAME_OP_BITMASK) != WebSocket::FRAME_OP_CLOSE);
         app.logger().information(Poco::format("(flags & WebSocket::FRAME_OP_BITMASK) = flags=0x%x", unsigned(flags)));
         app.logger().information("WebSocket connection closed.");
-        Poco::UTF16String a;
     }
     catch (WebSocketException& exc)
     {
