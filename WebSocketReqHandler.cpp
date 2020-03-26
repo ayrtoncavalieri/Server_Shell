@@ -1,5 +1,26 @@
 #include "WebSocketReqHandler.hpp"
 
+std::string WebSocketRequestHandler::SHA3Wrapper(std::string str)
+{
+    //SHA3 from Crypto++
+    CryptoPP::SHA3_256 _hash;
+    std::string digest, result;
+    CryptoPP::HexEncoder encoder(new CryptoPP::StringSink(result));
+    _hash.Update((const CryptoPP::byte*)str.c_str(), str.size());
+    digest.resize(_hash.DigestSize());
+    _hash.Final((CryptoPP::byte*)&digest[0]);
+    CryptoPP::StringSource(digest, true, new CryptoPP::Redirector(encoder));
+    //End of SHA3 from Crypto++
+    return result;
+}
+
+std::string WebSocketRequestHandler::passwordCalc(std::string pass)
+{
+    std::string salt = "_Onj3TjOR*";
+    pass += salt;
+    return SHA3Wrapper(pass);
+}
+
 void WebSocketRequestHandler::handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 {
 Application& app = Application::instance();
@@ -14,6 +35,9 @@ Application& app = Application::instance();
         char buffer[BUFSIZE];
         int flags;
         int n;
+        int frames;
+        std::string incomeBuf;
+        frames = 0;
         do
         {
             app.logger().information("Receiving");
@@ -34,8 +58,11 @@ Application& app = Application::instance();
                     int sent;
                     sent = ws.sendFrame(buffer, n, flags);
                     app.logger().information(Poco::format("Bytes sent: %d", sent));
+                }else{
+                    incomeBuf += buffer;
                 }
             }
+            ++frames;
         }while (n > 0 && (flags & WebSocket::FRAME_OP_BITMASK) != WebSocket::FRAME_OP_CLOSE);
         app.logger().information(Poco::format("(flags & WebSocket::FRAME_OP_BITMASK) = flags=0x%x", unsigned(flags)));
         app.logger().information("WebSocket connection closed.");
