@@ -2,15 +2,13 @@
 
 std::string WebSocketRequestHandler::SHA3Wrapper(std::string str)
 {
-    //SHA3 from Crypto++
-    CryptoPP::SHA3_256 _hash;
-    std::string digest, result;
-    CryptoPP::HexEncoder encoder(new CryptoPP::StringSink(result));
-    _hash.Update((const CryptoPP::byte*)str.c_str(), str.size());
-    digest.resize(_hash.DigestSize());
-    _hash.Final((CryptoPP::byte*)&digest[0]);
-    CryptoPP::StringSource(digest, true, new CryptoPP::Redirector(encoder));
-    //End of SHA3 from Crypto++
+    std::string result;
+
+    Poco::Crypto::DigestEngine eng("SHA3-256");
+    eng.update(str);
+    result = eng.digestToHex(eng.digest());
+    Poco::toUpperInPlace(result);
+    
     return result;
 }
 

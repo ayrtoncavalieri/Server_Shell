@@ -18,6 +18,7 @@
                 "-lPocoNet",
                 "-lPocoUtil",
                 "-lPocoNetSSL",
+                "-lPocoCrypto",
                 "-lcryptopp"
             ],
             "options": {
