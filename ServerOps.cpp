@@ -1,13 +1,13 @@
 #include "ServerOps.hpp"
 
-ServerOps::ServerOps()
+ServerOps::ServerOps(): salt("_Onj3TjOR*")
 {
 
 }
 
 ServerOps::~ServerOps()
 {
-    
+
 }
 
 std::string ServerOps::processReq(std::string req)
@@ -25,13 +25,12 @@ std::string ServerOps::SHA3Wrapper(std::string str)
     eng.update(str);
     result = eng.digestToHex(eng.digest());
     Poco::toUpperInPlace(result);
-    
+
     return result;
 }
 
 std::string ServerOps::passwordCalc(std::string pass)
 {
-    std::string salt = "_Onj3TjOR*";
     pass += salt;
     return SHA3Wrapper(pass);
 }
