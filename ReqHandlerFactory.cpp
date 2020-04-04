@@ -17,7 +17,8 @@ HTTPRequestHandler* RequestHandlerFactory::createRequestHandler(const HTTPServer
         app.logger().information(it->first + ": " + it->second);
     }
 
-    if(request.find("Upgrade") != request.end() && Poco::icompare(request["Upgrade"], "websocket") == 0)
+    if(request.find("Upgrade") != request.end() && Poco::icompare(request["Upgrade"], "websocket") == 0
+    && request.find("sec-websocket-protocol") != request.end() && Poco::icompare(request["sec-websocket-protocol"], "PDRAUM") == 0)
         return new WebSocketRequestHandler;
     else
         return new PageRequestHandler;

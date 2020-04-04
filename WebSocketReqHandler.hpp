@@ -9,6 +9,7 @@
 
 #define BUFSIZE 65536
 #define MAXFRAMES 160
+#define ONESEC 1000000
 
 class WebSocketRequestHandler: public HTTPRequestHandler
 {

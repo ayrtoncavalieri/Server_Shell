@@ -68,6 +68,9 @@ int WebSocketServer::main(const std::vector<std::string>& args)
                 9,
                 false,
                 "ALL:!ADH:!LOW:!EXP:!MD5:@STRENGTH");
+        Poco::Net::Context *ptr = pContext;
+        ptr->requireMinimumProtocol(Poco::Net::Context::PROTO_TLSV1_2);
+        ptr = nullptr;
         Poco::Net::SSLManager::instance().initializeClient(0, pCert, pContext);*/
 
         // get parameters from configuration file

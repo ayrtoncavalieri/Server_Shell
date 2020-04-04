@@ -24,23 +24,23 @@ void WebSocketRequestHandler::handleRequest(HTTPServerRequest& request, HTTPServ
 Application& app = Application::instance();
     try
     {
-        Timespan timeOut(0, 30000000);
+        Timespan timeOut(0, 30 * ONESEC);
         WebSocket ws(request, response);
         ws.setReceiveTimeout(timeOut);
         ws.setSendTimeout(timeOut);
         ws.getBlocking() == true ? app.logger().information("blocking") : app.logger().information("~blocking");
         app.logger().information("WebSocket connection established.");
-        char buffer[BUFSIZE];
+        char buffer[BUFSIZE + 1];
         int flags;
         int n;
         int frames;
         std::string incomeBuf;
+        std::string respJSON;
         frames = 0;
-        do
-        {
-            app.logger().information("Receiving");
+        buffer[BUFSIZE] = '\0';
+        while(frames <= MAXFRAMES){
+            memset(buffer, '\0', BUFSIZE);
             n = ws.receiveFrame(buffer, BUFSIZE, flags);
-            app.logger().information(Poco::format("Frame received (length=%d, flags=0x%x).", n, unsigned(flags)));
             if((flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_PING){
                 app.logger().information(Poco::format("flags & WebSocket::FRAME_OP_BITMASK (flags=0x%x).", unsigned(flags & WebSocket::FRAME_OP_PING)));
                 app.logger().information("A PING!");
@@ -48,25 +48,38 @@ Application& app = Application::instance();
                 app.logger().information(Poco::format("flags = 0x%x", unsigned(flags)));
                 n = 1;
                 ws.sendFrame(buffer, 0, flags);
+            }else if(buffer[0] == 0x04){
+                break;
             }else{
-                if(buffer[0] == 0x04){
-                    ws.shutdown();
-                    app.logger().information("Connection shutdown.");
-                }else if(flags != 0x88){
-                    int sent;
-                    sent = ws.sendFrame(buffer, n, flags);
-                    app.logger().information(Poco::format("Bytes sent: %d", sent));
-                }else{
-                    incomeBuf += buffer;
-                }
+                ++frames;
+                incomeBuf += buffer;
             }
-            ++frames;
-        }while (n > 0 && (flags & WebSocket::FRAME_OP_BITMASK) != WebSocket::FRAME_OP_CLOSE);
-        app.logger().information(Poco::format("(flags & WebSocket::FRAME_OP_BITMASK) = flags=0x%x", unsigned(flags)));
-        app.logger().information("WebSocket connection closed.");
-    }
-    catch (WebSocketException& exc)
-    {
+        }
+        if(frames <= MAXFRAMES){
+            //Processar as requisições
+            if(respJSON.length() > BUFSIZE){
+                int i;
+                int len;
+                std::string _send;
+                for(i = 0; i < respJSON.length(); i += BUFSIZE){
+                    _send = respJSON.substr(i, BUFSIZE);
+                    flags = WebSocket::FRAME_FLAG_FIN | WebSocket::FRAME_OP_TEXT;
+                    ws.sendFrame(_send.c_str(), _send.length(), flags);
+                }
+            }else{
+                flags = WebSocket::FRAME_FLAG_FIN | WebSocket::FRAME_OP_TEXT;
+                ws.sendFrame(respJSON.c_str(), respJSON.length(), flags);
+            }
+            ws.shutdown();
+            n = ws.receiveFrame(buffer, BUFSIZE, flags);
+            if((flags & WebSocket::FRAME_OP_BITMASK) != WebSocket::FRAME_OP_CLOSE){
+
+            }else{
+                ws.shutdown(1009, "WS_PAYLOAD_TOO_BIG");
+            }
+            app.logger().information("WebSocket connection closed.");
+        }
+    }catch (WebSocketException& exc){
         app.logger().log(exc);
         switch (exc.code())
         {
