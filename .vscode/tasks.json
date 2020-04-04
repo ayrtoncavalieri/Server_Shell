@@ -18,8 +18,7 @@
                 "-lPocoNet",
                 "-lPocoUtil",
                 "-lPocoNetSSL",
-                "-lPocoCrypto",
-                "-lcryptopp"
+                "-lPocoCrypto"
             ],
             "options": {
                 "cwd": "/usr/bin"
