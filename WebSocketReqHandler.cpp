@@ -59,7 +59,6 @@ Application& app = Application::instance();
             //Processar as requisições
             if(respJSON.length() > BUFSIZE){
                 int i;
-                int len;
                 std::string _send;
                 for(i = 0; i < respJSON.length(); i += BUFSIZE){
                     _send = respJSON.substr(i, BUFSIZE);
@@ -74,10 +73,10 @@ Application& app = Application::instance();
             n = ws.receiveFrame(buffer, BUFSIZE, flags);
             if((flags & WebSocket::FRAME_OP_BITMASK) != WebSocket::FRAME_OP_CLOSE){
 
-            }else{
-                ws.shutdown(1009, "WS_PAYLOAD_TOO_BIG");
             }
             app.logger().information("WebSocket connection closed.");
+        }else{
+            ws.shutdown(1009, "WS_PAYLOAD_TOO_BIG");
         }
     }catch (WebSocketException& exc){
         app.logger().log(exc);
