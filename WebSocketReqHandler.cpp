@@ -1,24 +1,5 @@
 #include "WebSocketReqHandler.hpp"
 
-std::string WebSocketRequestHandler::SHA3Wrapper(std::string str)
-{
-    std::string result;
-
-    Poco::Crypto::DigestEngine eng("SHA3-256");
-    eng.update(str);
-    result = eng.digestToHex(eng.digest());
-    Poco::toUpperInPlace(result);
-    
-    return result;
-}
-
-std::string WebSocketRequestHandler::passwordCalc(std::string pass)
-{
-    std::string salt = "_Onj3TjOR*";
-    pass += salt;
-    return SHA3Wrapper(pass);
-}
-
 void WebSocketRequestHandler::handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 {
 Application& app = Application::instance();
@@ -38,26 +19,30 @@ Application& app = Application::instance();
         std::string respJSON;
         frames = 0;
         buffer[BUFSIZE] = '\0';
+        //Receive frames
         while(frames <= MAXFRAMES){
             memset(buffer, '\0', BUFSIZE);
             n = ws.receiveFrame(buffer, BUFSIZE, flags);
-            if((flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_PING){
+            if((flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_PING){ // Process PINGS
                 app.logger().information(Poco::format("flags & WebSocket::FRAME_OP_BITMASK (flags=0x%x).", unsigned(flags & WebSocket::FRAME_OP_PING)));
                 app.logger().information("A PING!");
                 flags = (WebSocket::FRAME_FLAG_FIN | WebSocket::FRAME_OP_PONG);
                 app.logger().information(Poco::format("flags = 0x%x", unsigned(flags)));
                 n = 1;
                 ws.sendFrame(buffer, 0, flags);
-            }else if(buffer[0] == 0x04){
+            }else if(buffer[0] == 0x04){ // Received EOT and ending income
                 break;
-            }else{
+            }else{ // Adding income to buffer
                 ++frames;
                 incomeBuf += buffer;
             }
         }
         if(frames <= MAXFRAMES){
-            //Processar as requisições
-            if(respJSON.length() > BUFSIZE){
+            //Process requisitions
+            ServerOps srv;
+            respJSON = srv.processReq(incomeBuf);
+
+            if(respJSON.length() > BUFSIZE){ //Sending a big response
                 int i;
                 std::string _send;
                 for(i = 0; i < respJSON.length(); i += BUFSIZE){
@@ -65,7 +50,7 @@ Application& app = Application::instance();
                     flags = WebSocket::FRAME_FLAG_FIN | WebSocket::FRAME_OP_TEXT;
                     ws.sendFrame(_send.c_str(), _send.length(), flags);
                 }
-            }else{
+            }else{ //Sending a small response
                 flags = WebSocket::FRAME_FLAG_FIN | WebSocket::FRAME_OP_TEXT;
                 ws.sendFrame(respJSON.c_str(), respJSON.length(), flags);
             }
@@ -75,7 +60,7 @@ Application& app = Application::instance();
 
             }
             app.logger().information("WebSocket connection closed.");
-        }else{
+        }else{ //Warning sender that the payload is too big
             ws.shutdown(1009, "WS_PAYLOAD_TOO_BIG");
         }
     }catch (WebSocketException& exc){
