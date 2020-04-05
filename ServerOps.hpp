@@ -9,7 +9,7 @@ class ServerOps
     public:
         ServerOps();
         ~ServerOps();
-        std::string processReq(std::string req);
+        std::string processReq(std::string &req);
     private:
 	    std::string salt;
         std::string SHA3Wrapper(std::string str);
