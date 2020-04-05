@@ -1,6 +1,6 @@
 #include "ServerOps.hpp"
 
-ServerOps::ServerOps(): salt("_Onj3TjOR*")
+ServerOps::ServerOps(): salt("S417_3*ampl3")
 {
 
 }
