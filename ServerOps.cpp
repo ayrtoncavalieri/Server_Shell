@@ -40,7 +40,7 @@ std::string ServerOps::processReq(std::string &req)
         reason += e.className();
         reason += " -> ";
         reason += e.message();
-        Message unk("ServerOps::processReq", "Unknown exception!", Message::PRIO_CRITICAL);
+        Message unk("ServerOps::processReq", reason, Message::PRIO_CRITICAL);
         app.logger().log(unk);
         respJSON = "{\"status\": \"" + req.substr(0, 3) + "\", \"error\":\"unknown_exception\"}";
     }catch( ... ){
