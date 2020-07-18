@@ -18,7 +18,10 @@
                 "-lPocoNet",
                 "-lPocoUtil",
                 "-lPocoNetSSL",
-                "-lPocoCrypto"
+                "-lPocoCrypto",
+                "-lPocoData",
+                "-lPocoDataMySQL",
+                "-lPocoJSON"
             ],
             "options": {
                 "cwd": "/usr/bin"
