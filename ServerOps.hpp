@@ -17,8 +17,6 @@ class ServerOps
         std::string processReq(std::string &req);
     private:
         std::string salt;
-        std::string SHA3Wrapper(std::string str);
-        std::string passwordCalc(std::string pass);
 };
 
 #endif
