@@ -47,7 +47,7 @@ std::string commonOps::genAuthID(unsigned int tam)
     return resp;
 }
 
-Object::Ptr commonOps::erroOpJSON(int op, std::string erro)
+Object::Ptr commonOps::erroOpJSON(unsigned int op, std::string erro)
 {
     Poco::JSON::Object::Ptr respJSON = new Poco::JSON::Object;
     respJSON->set("status", Poco::NumberFormatter::format(op));
