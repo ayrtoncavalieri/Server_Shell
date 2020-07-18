@@ -14,7 +14,7 @@ void WebSocketServer::initialize(Application &self)
 {
     loadConfiguration(); // load default configuration files, if present
     ServerApplication::initialize(self);
-        Poco::AutoPtr<Poco::FileChannel> fCh(new Poco::FileChannel);
+    Poco::AutoPtr<Poco::FileChannel> fCh(new Poco::FileChannel);
 #ifndef DEBUG
     fCh->setProperty("path", "realPath.log");
     fCh->setProperty("rotation", "daily");
