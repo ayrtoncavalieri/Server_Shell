@@ -15,12 +15,16 @@ void WebSocketServer::initialize(Application &self)
     loadConfiguration(); // load default configuration files, if present
     ServerApplication::initialize(self);
         Poco::AutoPtr<Poco::FileChannel> fCh(new Poco::FileChannel);
-    fCh->setProperty("path", "ShellServer.log");
+#ifndef DEBUG
+    fCh->setProperty("path", "realPath.log");
     fCh->setProperty("rotation", "daily");
     fCh->setProperty("archive", "timestamp");
     fCh->setProperty("times", "local");
     fCh->setProperty("compress", "true");
     fCh->setProperty("purgeAge", "6 months");
+#else
+    fCh->setProperty("path", "ShellServer.debug.log");
+#endif
 
     Poco::AutoPtr<Poco::PatternFormatter> formatter(new Poco::PatternFormatter);
     formatter->setProperty("times", "local");
