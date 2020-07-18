@@ -1,3 +1,6 @@
+#ifndef POCOINC_H
+#define POCOINC_H
+
 #include <Poco/Exception.h>
 #include <Poco/Format.h>
 #include <Poco/ThreadPool.h>
@@ -25,6 +28,7 @@
 #include <Poco/Logger.h>
 #include <Poco/Message.h>
 
+#endif
 
 using Poco::Net::ServerSocket;
 using Poco::Net::SecureServerSocket;
