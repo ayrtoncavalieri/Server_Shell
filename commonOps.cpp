@@ -50,7 +50,7 @@ std::string commonOps::genAuthID(unsigned int tam)
 Object::Ptr commonOps::erroOpJSON(int op, std::string erro)
 {
     Poco::JSON::Object::Ptr respJSON = new Poco::JSON::Object;
-    respJSON->set("status", Poco::NumberFormatter::format(op + 50));
+    respJSON->set("status", Poco::NumberFormatter::format(op));
     respJSON->set("error", erro);
     return respJSON;
 }
