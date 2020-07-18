@@ -74,14 +74,15 @@ int WebSocketServer::main(const std::vector<std::string>& args)
         displayHelp();
     }
     else
-    {
-        /*Poco::Net::initializeSSL();
+    {   
+#ifdef SECSRV
+        Poco::Net::initializeSSL();
         Poco::SharedPtr<Poco::Net::InvalidCertificateHandler> pCert =
             new Poco::Net::ConsoleCertificateHandler(false);
         Poco::Net::Context::Ptr pContext = new Poco::Net::Context(
                 Poco::Net::Context::SERVER_USE,
-                "/home/ayrton/Documents/C/OpenSSLTest/key.pem",
-                "/home/ayrton/Documents/C/OpenSSLTest/cert.pem",
+                "key.pem",
+                "cert.pem",
                 "",
                 Poco::Net::Context::VERIFY_RELAXED,
                 9,
@@ -90,7 +91,8 @@ int WebSocketServer::main(const std::vector<std::string>& args)
         Poco::Net::Context *ptr = pContext;
         ptr->requireMinimumProtocol(Poco::Net::Context::PROTO_TLSV1_2);
         ptr = nullptr;
-        Poco::Net::SSLManager::instance().initializeClient(0, pCert, pContext);*/
+        Poco::Net::SSLManager::instance().initializeClient(0, pCert, pContext);
+#endif
 
         // get parameters from configuration file
         unsigned short port = (unsigned short) config().getInt("WebSocketServer.port", 43880);
@@ -98,8 +100,11 @@ int WebSocketServer::main(const std::vector<std::string>& args)
         ThreadPool pool(128, 256, 60, POCO_THREAD_STACK_SIZE);
 
         // set-up a server socket
+#ifdef SECSRV
+        SecureServerSocket svs(port, 64, pContext);
+#else
         ServerSocket svs(port);
-        //SecureServerSocket svs(port, 64, pContext);
+#endif
         svs.supportsIPv6() == true ? printf("IPv6\n") : printf("IPv4\n");
         // set-up a HTTPServer instance
         HTTPServer srv(new RequestHandlerFactory, pool, svs, new HTTPServerParams);
