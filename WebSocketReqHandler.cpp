@@ -2,15 +2,19 @@
 
 void WebSocketRequestHandler::handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
 {
-Application& app = Application::instance();
+    Application& app = Application::instance();
+    Poco::Message msn;
+    msn.setSource("WebSocketRequestHandler");
+    Timespan timeOut(0, 30 * ONESEC);
+    response.set("Sec-WebSocket-Protocol", "PDRAUM");
+    WebSocket ws(request, response);
     try
     {
-        Timespan timeOut(0, 30 * ONESEC);
-        WebSocket ws(request, response);
         ws.setReceiveTimeout(timeOut);
         ws.setSendTimeout(timeOut);
-        ws.getBlocking() == true ? app.logger().information("blocking") : app.logger().information("~blocking");
-        app.logger().information("WebSocket connection established.");
+        msn.setText("WebSocket connection established");
+        msn.setPriority(Poco::Message::PRIO_INFORMATION);
+        app.logger().log(msn);
         char buffer[BUFSIZE + 1];
         int flags;
         int n;
@@ -20,14 +24,21 @@ Application& app = Application::instance();
         frames = 0;
         buffer[BUFSIZE] = '\0';
         //Receive frames
+        ws.setMaxPayloadSize(BUFSIZE);
         while(frames <= MAXFRAMES){
             memset(buffer, '\0', BUFSIZE);
             n = ws.receiveFrame(buffer, BUFSIZE, flags);
             if((flags & WebSocket::FRAME_OP_BITMASK) == WebSocket::FRAME_OP_PING){ // Process PINGS
-                app.logger().information(Poco::format("flags & WebSocket::FRAME_OP_BITMASK (flags=0x%x).", unsigned(flags & WebSocket::FRAME_OP_PING)));
-                app.logger().information("A PING!");
+                msn.setText(Poco::format("flags & WebSocket::FRAME_OP_BITMASK (flags=0x%x).", unsigned(flags & WebSocket::FRAME_OP_PING)));
+                msn.setPriority(Poco::Message::PRIO_DEBUG);
+                app.logger().log(msn);
+                msn.setText("A PING");
+                msn.setPriority(Poco::Message::PRIO_DEBUG);
+                app.logger().log(msn);
                 flags = (WebSocket::FRAME_FLAG_FIN | WebSocket::FRAME_OP_PONG);
-                app.logger().information(Poco::format("flags = 0x%x", unsigned(flags)));
+                msn.setText(Poco::format("flags = 0x%x", unsigned(flags)));
+                msn.setPriority(Poco::Message::PRIO_DEBUG);
+                app.logger().log(msn);
                 n = 1;
                 ws.sendFrame(buffer, 0, flags);
             }else if(buffer[0] == 0x04){ // Received EOT and ending income
@@ -54,17 +65,27 @@ Application& app = Application::instance();
                 flags = WebSocket::FRAME_FLAG_FIN | WebSocket::FRAME_OP_TEXT;
                 ws.sendFrame(respJSON.c_str(), respJSON.length(), flags);
             }
-            ws.shutdown();
+            ws.shutdown(1000, "");
             n = ws.receiveFrame(buffer, BUFSIZE, flags);
             if((flags & WebSocket::FRAME_OP_BITMASK) != WebSocket::FRAME_OP_CLOSE){
 
             }
-            app.logger().information("WebSocket connection closed.");
+            msn.setText("WebSocket connection closed.");
+            msn.setPriority(Poco::Message::PRIO_INFORMATION);
+            app.logger().log(msn);
         }else{ //Warning sender that the payload is too big
+            msn.setText("PAYLOAD too big!");
+            msn.setPriority(Poco::Message::PRIO_INFORMATION);
+            app.logger().log(msn);
             ws.shutdown(1009, "WS_PAYLOAD_TOO_BIG");
         }
+        ws.close();
     }catch (WebSocketException& exc){
-        app.logger().log(exc);
+        std::string name = exc.what();
+        msn.setSource("WebSocketRequestHandler, " + name);
+        msn.setText(exc.message());
+        msn.setPriority(Poco::Message::PRIO_WARNING);
+        app.logger().log(msn);
         switch (exc.code())
         {
         case WebSocket::WS_ERR_HANDSHAKE_UNSUPPORTED_VERSION:
@@ -77,12 +98,25 @@ Application& app = Application::instance();
             response.setContentLength(0);
             response.send();
             break;
+        case WebSocket::WS_ERR_PAYLOAD_TOO_BIG:
+            msn.setText("PAYLOAD too big!");
+            msn.setPriority(Poco::Message::PRIO_INFORMATION);
+            app.logger().log(msn);
+            ws.shutdown(1009, "WS_PAYLOAD_TOO_BIG");
+            break;
         }
+        ws.close();
     }catch (TimeoutException& e){
-        app.logger().log(e);
-        app.logger().information("Timeout exception.");
+        std::string name = e.what();
+        msn.setSource("WebSocketRequestHandler, " + name);
+        msn.setText(e.message());
+        msn.setPriority(Poco::Message::PRIO_WARNING);
+        app.logger().log(msn);
     }catch(NetException &e){
-        app.logger().log(e);
-        app.logger().information("Network exception.");
+        std::string name = e.what();
+        msn.setSource("WebSocketRequestHandler, " + name);
+        msn.setText(e.message());
+        msn.setPriority(Poco::Message::PRIO_WARNING);
+        app.logger().log(msn);
     }
 }
