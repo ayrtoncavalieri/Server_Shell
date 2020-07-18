@@ -15,7 +15,7 @@ void WebSocketServer::initialize(Application &self)
     loadConfiguration(); // load default configuration files, if present
     ServerApplication::initialize(self);
         Poco::AutoPtr<Poco::FileChannel> fCh(new Poco::FileChannel);
-    fCh->setProperty("path", "/dataDisk/_StoreServerLogs/_storeserver.log");
+    fCh->setProperty("path", "ShellServer.log");
     fCh->setProperty("rotation", "daily");
     fCh->setProperty("archive", "timestamp");
     fCh->setProperty("times", "local");
