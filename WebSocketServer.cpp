@@ -109,7 +109,6 @@ int WebSocketServer::main(const std::vector<std::string>& args)
 #else
         ServerSocket svs(port);
 #endif
-        svs.supportsIPv6() == true ? printf("IPv6\n") : printf("IPv4\n");
         // set-up a HTTPServer instance
         HTTPServer srv(new RequestHandlerFactory, pool, svs, new HTTPServerParams);
         // start the HTTPServer
