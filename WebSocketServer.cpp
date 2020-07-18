@@ -14,6 +14,25 @@ void WebSocketServer::initialize(Application &self)
 {
     loadConfiguration(); // load default configuration files, if present
     ServerApplication::initialize(self);
+        Poco::AutoPtr<Poco::FileChannel> fCh(new Poco::FileChannel);
+    fCh->setProperty("path", "/dataDisk/_StoreServerLogs/_storeserver.log");
+    fCh->setProperty("rotation", "daily");
+    fCh->setProperty("archive", "timestamp");
+    fCh->setProperty("times", "local");
+    fCh->setProperty("compress", "true");
+    fCh->setProperty("purgeAge", "6 months");
+
+    Poco::AutoPtr<Poco::PatternFormatter> formatter(new Poco::PatternFormatter);
+    formatter->setProperty("times", "local");
+    formatter->setProperty("pattern", "%Y-%m-%d %H:%M:%S.%F%z [%s]: [%p] -> %t");
+    Poco::AutoPtr<Poco::FormattingChannel> fChannel(new Poco::FormattingChannel(formatter, fCh));
+    Poco::AutoPtr<Poco::AsyncChannel> aCh(new Poco::AsyncChannel(fChannel));
+    self.logger().setChannel(aCh);
+#ifdef DEBUG
+    self.logger().setLevel(Poco::Message::PRIO_DEBUG);
+#else
+    self.logger().setLevel(Poco::Message::PRIO_INFORMATION);
+#endif
 }
 
 void WebSocketServer::uninitialize()

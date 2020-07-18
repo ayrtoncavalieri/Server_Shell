@@ -5,6 +5,12 @@
 #include <vector>
 #include "PocoInclude.hpp"
 #include "ReqHandlerFactory.hpp"
+#include <Poco/AutoPtr.h>
+#include <Poco/FileChannel.h>
+#include <Poco/AsyncChannel.h>
+#include <Poco/PatternFormatter.h>
+#include <Poco/FormattingChannel.h>
+
 
 class WebSocketServer: public Poco::Util::ServerApplication
 {
