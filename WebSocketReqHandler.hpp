@@ -2,9 +2,6 @@
 #define WEBSOCKREQHAND_H
 
 #include <iostream>
-#include <cryptopp/sha3.h>
-#include <cryptopp/cryptlib.h>
-#include <cryptopp/hex.h>
 
 #include "PocoInclude.hpp"
 #include "ServerOps.hpp"
