@@ -21,7 +21,6 @@
 #include <Poco/Util/Option.h>
 #include <Poco/Util/OptionSet.h>
 #include <Poco/Util/ServerApplication.h>
-#include <Poco/Crypto/DigestEngine.h>
 #include <Poco/String.h>
 #include <Poco/Logger.h>
 #include <Poco/Message.h>

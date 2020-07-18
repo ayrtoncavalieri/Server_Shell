@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <Poco/NumberFormatter.h>
 #include <Poco/JSON/Object.h>
+#include <Poco/Crypto/DigestEngine.h>
 
 using namespace Poco::JSON;
 
