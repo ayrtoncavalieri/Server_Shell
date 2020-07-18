@@ -23,6 +23,9 @@
 #include <Poco/Util/ServerApplication.h>
 #include <Poco/Crypto/DigestEngine.h>
 #include <Poco/String.h>
+#include <Poco/Logger.h>
+#include <Poco/Message.h>
+
 
 using Poco::Net::ServerSocket;
 using Poco::Net::SecureServerSocket;
@@ -45,3 +48,5 @@ using Poco::Util::OptionSet;
 using Poco::Util::HelpFormatter;
 using Poco::TimeoutException;
 using Poco::Net::NetException;
+using Poco::Logger;
+using Poco::Message;
