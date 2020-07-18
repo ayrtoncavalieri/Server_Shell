@@ -63,7 +63,7 @@ void WebSocketServer::displayHelp()
     HelpFormatter helpFormatter(options());
     helpFormatter.setCommand(commandName());
     helpFormatter.setUsage("OPTIONS");
-    helpFormatter.setHeader("A sample HTTP server supporting the WebSocket protocol.");
+    helpFormatter.setHeader("This is the Poco ServerShell. A dummy server for develop applications.");
     helpFormatter.format(std::cout);
 }
 
