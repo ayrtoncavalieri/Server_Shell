@@ -14,11 +14,11 @@ std::string ServerOps::processReq(std::string &req)
 {
     Application& app = Application::instance();
     std::string respJSON;
+    Poco::JSON::Object::Ptr reqJSON, procJSON;
     Poco::JSON::Parser p;
     unsigned int option;
     //Process data
     try{
-        Poco::JSON::Object::Ptr reqJSON, procJSON;
         option = Poco::NumberParser::parseUnsigned(req.substr(0, 3));
         reqJSON = p.parse(req.substr(3, std::string::npos)).extract<Poco::JSON::Object::Ptr>();
 
