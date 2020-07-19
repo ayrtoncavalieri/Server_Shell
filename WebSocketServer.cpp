@@ -25,7 +25,6 @@ void WebSocketServer::initialize(Application &self)
 #else
     fCh->setProperty("path", "ShellServer.debug.log");
 #endif
-
     Poco::AutoPtr<Poco::PatternFormatter> formatter(new Poco::PatternFormatter);
     formatter->setProperty("times", "local");
     formatter->setProperty("pattern", "%Y-%m-%d %H:%M:%S.%F%z [%s]: [%p] -> %t");
