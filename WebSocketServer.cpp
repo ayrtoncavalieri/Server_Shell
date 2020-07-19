@@ -32,6 +32,7 @@ void WebSocketServer::initialize(Application &self)
     Poco::AutoPtr<Poco::FormattingChannel> fChannel(new Poco::FormattingChannel(formatter, fCh));
     Poco::AutoPtr<Poco::AsyncChannel> aCh(new Poco::AsyncChannel(fChannel));
     self.logger().setChannel(aCh);
+    std::cout << self.logger().name() << std::endl;
 #ifdef DEBUG
     self.logger().setLevel(Poco::Message::PRIO_DEBUG);
 #else
@@ -73,12 +74,13 @@ void WebSocketServer::displayHelp()
 
 int WebSocketServer::main(const std::vector<std::string>& args)
 {
-    if (_helpRequested)
-    {
+    if (_helpRequested){
         displayHelp();
     }
-    else
-    {   
+    else{
+        // get parameters from configuration file
+        unsigned short port = (unsigned short) config().getInt("WebSocketServer.port", 43880);
+        ThreadPool pool(128, 256, 60, POCO_THREAD_STACK_SIZE);
 #ifdef SECSRV
         Poco::Net::initializeSSL();
         Poco::SharedPtr<Poco::Net::InvalidCertificateHandler> pCert =
@@ -96,16 +98,8 @@ int WebSocketServer::main(const std::vector<std::string>& args)
         ptr->requireMinimumProtocol(Poco::Net::Context::PROTO_TLSV1_2);
         ptr = nullptr;
         Poco::Net::SSLManager::instance().initializeClient(0, pCert, pContext);
-#endif
-
-        // get parameters from configuration file
-        unsigned short port = (unsigned short) config().getInt("WebSocketServer.port", 43880);
-        
-        ThreadPool pool(128, 256, 60, POCO_THREAD_STACK_SIZE);
-
         // set-up a server socket
-#ifdef SECSRV
-        SecureServerSocket svs(port, 64, pContext);
+        SecureServerSocket svs(port, 128, pContext);
 #else
         ServerSocket svs(port);
 #endif
