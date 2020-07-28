@@ -12,10 +12,10 @@ ServerOps::~ServerOps()
 
 std::string ServerOps::processReq(std::string &req)
 {
-    std::string respJSON;
-    Poco::JSON::Object::Ptr reqJSON, procJSON;  
-    Poco::JSON::Parser p;
-    unsigned int option = 0;
+    std::string respJSON; //32 bytes
+    Poco::JSON::Object::Ptr reqJSON, procJSON; //16 bytes * 2  
+    Poco::JSON::Parser p; //40 bytes
+    unsigned int option = 0; //4 bytes
     //Process data
     try{
         reqJSON = p.parse(req.substr(3, std::string::npos)).extract<Poco::JSON::Object::Ptr>();
