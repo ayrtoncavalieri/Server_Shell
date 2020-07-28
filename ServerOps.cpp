@@ -28,7 +28,6 @@ std::string ServerOps::processReq(std::string &req)
         reason += " -> ";
         reason += e.message();
         commonOps::logMessage("ServerOps::processReq", reason, Message::PRIO_WARNING);
-        option = 0;
         procJSON = commonOps::erroOpJSON(option, "json_with_error");
     }catch(Poco::InvalidAccessException &e){
         std::string reason = "Poco InvalidAccessException";
