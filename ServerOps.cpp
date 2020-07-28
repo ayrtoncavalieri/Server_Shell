@@ -23,18 +23,33 @@ std::string ServerOps::processReq(std::string &req)
 
         //Select option and do something.
 
+    }catch(Poco::SyntaxException &e){
+        std::string reason = "Poco SyntaxException";
+        reason += " -> ";
+        reason += e.message();
+        commonOps::logMessage("ServerOps::processReq", reason, Message::PRIO_WARNING);
+        option = 0;
+        procJSON = commonOps::erroOpJSON(option, "json_with_error");
     }catch(Poco::InvalidAccessException &e){
-        commonOps::logMessage("ServerOps::processReq", "JSON InvalidAccess", Message::PRIO_WARNING);
+        std::string reason = "Poco InvalidAccessException";
+        reason += " -> ";
+        reason += e.message();
+        commonOps::logMessage("ServerOps::processReq", reason, Message::PRIO_WARNING);
         procJSON = commonOps::erroOpJSON(option, "json_with_error");
     }catch(Poco::RangeException &e){
-        commonOps::logMessage("ServerOps::processReq", "JSON RangeException", Message::PRIO_WARNING);
+        std::string reason = "Poco RangeException";
+        reason += " -> ";
+        reason += e.message();
+        commonOps::logMessage("ServerOps::processReq", reason, Message::PRIO_WARNING);
         procJSON = commonOps::erroOpJSON(option, "json_with_error");
     }catch(Poco::JSON::JSONException &e){
-        commonOps::logMessage("ServerOps::processReq", "JSON with error", Message::PRIO_WARNING);
+        std::string reason = "Poco JSONException";
+        reason += " -> ";
+        reason += e.message();
+        commonOps::logMessage("ServerOps::processReq", reason, Message::PRIO_WARNING);
         procJSON = commonOps::erroOpJSON(option, "json_with_error");
     }catch(Poco::Data::DataException &e){
-        std::string reason = "Poco DataException: ";
-        reason += e.className();
+        std::string reason = "Poco DataException";
         reason += " -> ";
         reason += e.message();
         commonOps::logMessage("ServerOps::processReq", reason, Message::PRIO_CRITICAL);
