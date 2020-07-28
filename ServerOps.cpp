@@ -12,7 +12,6 @@ ServerOps::~ServerOps()
 
 std::string ServerOps::processReq(std::string &req)
 {
-    Application& app = Application::instance();
     std::string respJSON;
     Poco::JSON::Object::Ptr reqJSON, procJSON;  
     Poco::JSON::Parser p;
